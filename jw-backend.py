@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from gevent.pywsgi import WSGIServer
 import random
 
@@ -19,6 +19,17 @@ wrong_reasons = [
     "Is the space pope reptilian?",
     "Beeg Beeg",
     "Wrongo Bongo" ]
+
+# Add cors headers after the fact
+def add_cors_headers(response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    if request.method == 'OPTIONS':
+        response.headers['Access-Control-Allow-Methods'] = 'DELETE, GET, POST, PUT'
+        headers = request.headers.get('Access-Control-Request-Headers')
+        if headers:
+            response.headers['Access-Control-Allow-Headers'] = headers
+    return response
+app.after_request(add_cors_headers)
 
 @app.route('/wrong-reason')
 def wrong_reason():
